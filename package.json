@@ -10,6 +10,7 @@
     "test": "node testJobAnalyzer.js",
     "test:workflow": "node test-workflow.js",
     "test:api": "node test-grok-api.js",
+    "test:export": "node test-export.js",
     "check-env": "node check-env.js"
   },
   "keywords": [

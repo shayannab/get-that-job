@@ -4,6 +4,7 @@ const { analyzeJobPosting } = require('../../jobAnalyzer');
 const { generateQuestions } = require('../services/questionGenerator');
 const { generateResumeContent } = require('../services/resumeGenerator');
 const { scoreResume } = require('../services/atsScorer');
+const { exportResume } = require('../services/documentExporter');
 
 /**
  * POST /analyze-job
@@ -233,13 +234,25 @@ router.post('/generate-resume', async (req, res) => {
     // Generate resume content
     const resumeContent = await generateResumeContent(jobAnalysis, answers);
 
+    // Add personal info to resume content for export
+    const resumeWithPersonalInfo = {
+      ...resumeContent,
+      personalInfo: {
+        name: answers.full_name,
+        email: answers.email,
+        phone: answers.phone,
+        linkedin: answers.linkedin_url || answers.linkedin || null,
+      },
+      userAnswers: answers,
+    };
+
     // Calculate ATS score
     const scoreData = scoreResume(resumeContent, jobAnalysis);
 
     // Return success response
     return res.status(200).json({
       success: true,
-      resume: resumeContent,
+      resume: resumeWithPersonalInfo,
       score: scoreData,
     });
   } catch (error) {
@@ -264,6 +277,96 @@ router.post('/generate-resume', async (req, res) => {
     return res.status(500).json({
       success: false,
       error: 'Failed to generate resume: ' + error.message,
+    });
+  }
+});
+
+/**
+ * POST /export-resume
+ * Exports resume in specified format (PDF, DOCX, or TXT)
+ * 
+ * @route POST /export-resume
+ * @param {Object} req.body - Request body
+ * @param {Object} req.body.resume - The resume content object
+ * @param {Object} req.body.userAnswers - User answers for personal info
+ * @param {string} req.body.format - Export format: 'pdf', 'docx', or 'txt'
+ * @returns {Buffer|string} 200 - Exported file (binary for PDF/DOCX, text for TXT)
+ * @returns {Object} 400 - Validation error
+ * @returns {Object} 500 - Server error
+ */
+router.post('/export-resume', async (req, res) => {
+  try {
+    // Validate input
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'Request body is required',
+      });
+    }
+
+    const { resume, userAnswers, format } = req.body;
+
+    if (!resume || typeof resume !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'resume is required and must be an object',
+      });
+    }
+
+    if (!format || typeof format !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'format is required and must be a string (pdf, docx, or txt)',
+      });
+    }
+
+    const validFormats = ['pdf', 'docx', 'txt', 'text'];
+    if (!validFormats.includes(format.toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid format. Supported formats: ${validFormats.join(', ')}`,
+      });
+    }
+
+    // Merge userAnswers into resume for personal info
+    const resumeWithPersonalInfo = {
+      ...resume,
+      userAnswers: userAnswers || {},
+    };
+
+    // Export resume
+    const exportedContent = await exportResume(resumeWithPersonalInfo, format);
+
+    // Set appropriate headers based on format
+    const formatLower = format.toLowerCase();
+    if (formatLower === 'pdf') {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="resume.pdf"');
+      return res.status(200).send(exportedContent);
+    } else if (formatLower === 'docx') {
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename="resume.docx"');
+      return res.status(200).send(exportedContent);
+    } else {
+      // txt or text
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', 'attachment; filename="resume.txt"');
+      return res.status(200).send(exportedContent);
+    }
+  } catch (error) {
+    // Handle validation errors
+    if (error.message.includes('Unsupported format') || error.message.includes('Invalid format')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    // Handle other errors
+    console.error('Error in /export-resume:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to export resume: ' + error.message,
     });
   }
 });
