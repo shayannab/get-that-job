@@ -1,0 +1,37 @@
+{
+  "name": "resumeAi-backend",
+  "version": "1.0.0",
+  "description": "AI-powered ATS resume builder backend",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node testJobAnalyzer.js",
+    "test:workflow": "node test-workflow.js",
+    "test:api": "node test-grok-api.js",
+    "test:export": "node test-export.js",
+    "check-env": "node check-env.js"
+  },
+  "keywords": [
+    "resume",
+    "ats",
+    "ai",
+    "claude",
+    "anthropic",
+    "resume-builder"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "docx": "^8.5.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "pdfkit": "^0.14.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

@@ -1,0 +1,35 @@
+JOHN DOE
+john.doe@example.com | +1-555-123-4567 | https://linkedin.com/in/johndoe
+
+PROFESSIONAL SUMMARY
+==================================================
+Experienced Software Engineer with 5+ years of expertise in full-stack development. Proven track record of building scalable web applications using React, Node.js, and cloud technologies.
+
+PROFESSIONAL EXPERIENCE
+==================================================
+Senior Software Engineer - TechCorp Inc. | 2020 - Present
+  • Developed scalable web applications serving 100K+ daily users, improving performance by 40%
+  • Led a team of 5 developers in implementing microservices architecture, reducing deployment time by 60%
+  • Implemented CI/CD pipelines using Docker and Kubernetes, increasing deployment frequency by 3x
+
+Full Stack Developer - StartupXYZ | 2018 - 2020
+  • Built RESTful APIs using Node.js and Express, handling 1M+ requests daily
+  • Created responsive front-end applications using React, improving user engagement by 25%
+  • Optimized database queries, reducing response time by 50%
+
+SKILLS
+==================================================
+Technical: JavaScript, TypeScript, React, Node.js, PostgreSQL, MongoDB
+Soft Skills: Leadership, Communication, Problem Solving, Team Collaboration
+Tools: Git, Docker, Kubernetes, AWS, Jenkins
+
+EDUCATION
+==================================================
+Bachelor of Science in Computer Science - State University | 2018
+  GPA: 3.8/4.0, Magna Cum Laude
+
+CERTIFICATIONS
+==================================================
+  • AWS Certified Solutions Architect (2021)
+  • Certified Kubernetes Administrator (2022)
+
