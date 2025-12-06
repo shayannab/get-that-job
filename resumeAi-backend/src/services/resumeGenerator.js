@@ -477,7 +477,7 @@ function validateResumeStructure(resume) {
     throw new Error("Invalid resume: 'skills' must be an object");
   }
 
-  const skillCategories = ['technical', 'soft', 'tools'];
+  const skillCategories = ['languages', 'frameworks', 'databases', 'cloud', 'tools'];
   for (const category of skillCategories) {
     if (!(category in resume.skills)) {
       throw new Error(`Invalid resume: 'skills.${category}' is missing`);
