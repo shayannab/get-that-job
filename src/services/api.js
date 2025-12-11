@@ -42,7 +42,7 @@ export const analyzeJob = async (jobPosting) => {
     }
   } catch (error) {
     console.error('Error analyzing job:', error);
-    
+
     if (error.response) {
       // Server responded with error status
       return {
@@ -96,7 +96,7 @@ export const generateQuestions = async (jobAnalysis) => {
     }
   } catch (error) {
     console.error('Error generating questions:', error);
-    
+
     if (error.response) {
       return {
         success: false,
@@ -149,6 +149,8 @@ export const generateResume = async (jobAnalysis, answers) => {
         data: {
           resume: response.data.resume,
           score: response.data.score,
+          skillsGap: response.data.skillsGap,
+          salaryInsights: response.data.salaryInsights,
         },
       };
     } else {
@@ -159,7 +161,7 @@ export const generateResume = async (jobAnalysis, answers) => {
     }
   } catch (error) {
     console.error('Error generating resume:', error);
-    
+
     if (error.response) {
       return {
         success: false,
@@ -198,7 +200,7 @@ export const exportResume = async (resumeContent, jobAnalysis = null, answers = 
 
     const validFormats = ['pdf', 'docx', 'txt'];
     const normalizedFormat = format.toLowerCase();
-    
+
     if (!validFormats.includes(normalizedFormat)) {
       return {
         success: false,
@@ -236,7 +238,7 @@ export const exportResume = async (resumeContent, jobAnalysis = null, answers = 
     };
   } catch (error) {
     console.error('Error exporting resume:', error);
-    
+
     if (error.response) {
       // Try to parse error blob if it's JSON
       if (error.response.data instanceof Blob) {
@@ -254,7 +256,7 @@ export const exportResume = async (resumeContent, jobAnalysis = null, answers = 
           };
         }
       }
-      
+
       return {
         success: false,
         error: error.response.data?.error || error.response.data?.message || `Server error: ${error.response.status}`,
@@ -268,6 +270,68 @@ export const exportResume = async (resumeContent, jobAnalysis = null, answers = 
       return {
         success: false,
         error: error.message || 'Failed to export resume',
+      };
+    }
+  }
+};
+
+/**
+ * Generate cover letter based on job analysis and user answers
+ * @param {Object} jobAnalysis - The job analysis object
+ * @param {Object} answers - User answers object
+ * @param {Object} resumeContent - Optional resume content for reference
+ * @returns {Promise<Object>} - Cover letter with success flag
+ */
+export const generateCoverLetter = async (jobAnalysis, answers, resumeContent = null) => {
+  try {
+    if (!jobAnalysis || typeof jobAnalysis !== 'object') {
+      return {
+        success: false,
+        error: 'Job analysis is required',
+      };
+    }
+
+    if (!answers || typeof answers !== 'object') {
+      return {
+        success: false,
+        error: 'Answers are required',
+      };
+    }
+
+    const response = await api.post('/generate-cover-letter', {
+      jobAnalysis,
+      answers,
+      resumeContent,
+    });
+
+    if (response.data.success) {
+      return {
+        success: true,
+        data: response.data.coverLetter,
+      };
+    } else {
+      return {
+        success: false,
+        error: response.data.error || 'Failed to generate cover letter',
+      };
+    }
+  } catch (error) {
+    console.error('Error generating cover letter:', error);
+
+    if (error.response) {
+      return {
+        success: false,
+        error: error.response.data?.error || error.response.data?.message || `Server error: ${error.response.status}`,
+      };
+    } else if (error.request) {
+      return {
+        success: false,
+        error: 'No response from server. Please check if the backend is running.',
+      };
+    } else {
+      return {
+        success: false,
+        error: error.message || 'Failed to generate cover letter',
       };
     }
   }
@@ -296,3 +360,4 @@ export const downloadBlob = (blob, filename) => {
 
 // Export default api instance for custom requests
 export default api;
+

@@ -10,13 +10,13 @@ function Dashboard() {
       <header className="bg-white border-b border-border">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
-            <h1 
+            <h1
               className="text-2xl font-bold text-textPrimary cursor-pointer"
               onClick={() => navigate('/')}
             >
-              ResumeAI
+              Get That Job
             </h1>
-            <button 
+            <button
               className="btn-primary"
               onClick={() => navigate('/')}
             >

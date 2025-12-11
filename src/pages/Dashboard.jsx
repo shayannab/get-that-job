@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  FileText,
+  HelpCircle,
+  Eye,
+  Mail,
+  Download,
+  Home,
+  Check,
+  ArrowLeft,
+  ArrowRight
+} from 'lucide-react';
 import { generateResume } from '../services/api';
 import JobAnalysisStep from '../components/steps/JobAnalysisStep';
 import QuestionsStep from '../components/steps/QuestionsStep';
 import ResumePreviewStep from '../components/steps/ResumePreviewStep';
+import CoverLetterStep from '../components/steps/CoverLetterStep';
 import DownloadStep from '../components/steps/DownloadStep';
 
 function Dashboard() {
   const navigate = useNavigate();
-  
+
   // State management
   const [currentStep, setCurrentStep] = useState(1);
   const [jobPosting, setJobPosting] = useState('');
@@ -17,27 +29,29 @@ function Dashboard() {
   const [answers, setAnswers] = useState({});
   const [resumeContent, setResumeContent] = useState(null);
   const [atsScore, setAtsScore] = useState(null);
+  const [skillsGap, setSkillsGap] = useState(null);
+  const [salaryInsights, setSalaryInsights] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Step navigation
+  // Step navigation with icons
   const steps = [
-    { id: 1, name: 'Job Analysis', icon: '📄' },
-    { id: 2, name: 'Questions', icon: '❓' },
-    { id: 3, name: 'Resume Preview', icon: '👁️' },
-    { id: 4, name: 'Download', icon: '⬇️' },
+    { id: 1, name: 'Job Analysis', shortName: 'Analysis', icon: FileText },
+    { id: 2, name: 'Questions', shortName: 'Questions', icon: HelpCircle },
+    { id: 3, name: 'Preview', shortName: 'Preview', icon: Eye },
+    { id: 4, name: 'Cover Letter', shortName: 'Letter', icon: Mail },
+    { id: 5, name: 'Download', shortName: 'Download', icon: Download },
   ];
 
   const handleStepClick = (stepId) => {
-    // Only allow navigation to completed steps or next step
-    if (stepId <= currentStep || stepId === currentStep) {
+    if (stepId <= currentStep) {
       setCurrentStep(stepId);
     }
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -48,213 +62,247 @@ function Dashboard() {
     }
   };
 
-  // Calculate progress percentage
-  const progress = ((currentStep - 1) / 3) * 100;
+  const currentStepData = steps.find(s => s.id === currentStep);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
+    <div className="min-h-screen bg-surface">
+      {/* Minimal Header */}
       <header className="bg-white border-b border-border">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
-            <h1 
-              className="text-2xl font-bold text-textPrimary cursor-pointer"
+            <h1
+              className="text-2xl font-bold text-textPrimary cursor-pointer tracking-tight"
               onClick={() => navigate('/')}
             >
-              ResumeAI
+              Get That Job
             </h1>
-            <button 
-              className="btn-primary"
+            <button
+              className="btn-ghost flex items-center gap-2 text-textSecondary hover:text-textPrimary"
               onClick={() => navigate('/')}
             >
-              Back to Home
+              <Home size={18} />
+              <span className="hidden sm:inline">Home</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Progress Indicator */}
-      <div className="bg-surface border-b border-border">
-        <div className="container-custom py-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-textSecondary">
-              Step {currentStep} of 4
-            </span>
-            <span className="text-sm font-medium text-textSecondary">
-              {Math.round(progress)}% Complete
-            </span>
-          </div>
-          <div className="progress-track">
-            <div 
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-      </div>
+      {/* Centered Step Indicator */}
+      <div className="bg-white border-b border-border py-8">
+        <div className="container-custom">
+          {/* Step Progress - Horizontal Pills */}
+          <div className="flex items-center justify-center gap-2 md:gap-4">
+            {steps.map((step, index) => {
+              const isActive = currentStep === step.id;
+              const isCompleted = step.id < currentStep;
+              const isDisabled = step.id > currentStep;
+              const IconComponent = step.icon;
 
-      {/* Main Layout */}
-      <div className="flex min-h-[calc(100vh-140px)]">
-        {/* Sidebar - Desktop */}
-        <aside className="hidden md:block w-64 bg-surface border-r border-border">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-textPrimary mb-6">
-              Resume Builder
-            </h2>
-            <nav className="space-y-2">
-              {steps.map((step) => {
-                const isActive = currentStep === step.id;
-                const isCompleted = step.id < currentStep;
-                const isDisabled = step.id > currentStep;
-
-                return (
+              return (
+                <React.Fragment key={step.id}>
                   <button
-                    key={step.id}
                     onClick={() => handleStepClick(step.id)}
                     disabled={isDisabled}
                     className={`
-                      w-full text-left px-4 py-3 rounded-lg transition-colors
-                      ${isActive 
-                        ? 'bg-success text-white font-medium' 
+                      flex items-center gap-2 px-4 py-2.5 rounded-full transition-all duration-300
+                      ${isActive
+                        ? 'bg-backgroundDark text-white shadow-lg scale-105'
                         : isCompleted
-                        ? 'bg-hover text-textPrimary hover:bg-hover'
-                        : isDisabled
-                        ? 'bg-white text-textSecondary cursor-not-allowed opacity-50'
-                        : 'bg-white text-textPrimary hover:bg-hover border border-border'
+                          ? 'bg-surface text-textPrimary hover:bg-hover cursor-pointer'
+                          : 'bg-white text-textMuted cursor-not-allowed border border-border'
                       }
                     `}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{step.icon}</span>
-                      <span>{step.name}</span>
-                      {isCompleted && (
-                        <span className="ml-auto text-success">✓</span>
-                      )}
-                    </div>
+                    {isCompleted ? (
+                      <Check size={16} className="text-backgroundDark" />
+                    ) : (
+                      <IconComponent size={16} />
+                    )}
+                    <span className="hidden md:inline text-sm font-medium">
+                      {step.shortName}
+                    </span>
                   </button>
-                );
-              })}
-            </nav>
-          </div>
-        </aside>
 
-        {/* Mobile Tabs - Top */}
-        <div className="md:hidden w-full bg-surface border-b border-border">
-          <div className="flex overflow-x-auto">
-            {steps.map((step) => {
-              const isActive = currentStep === step.id;
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => handleStepClick(step.id)}
-                  className={`
-                    flex-shrink-0 px-4 py-3 text-sm font-medium transition-colors
-                    ${isActive 
-                      ? 'bg-success text-white border-b-2 border-success' 
-                      : 'text-textSecondary hover:text-textPrimary'
-                    }
-                  `}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{step.icon}</span>
-                    <span className="hidden sm:inline">{step.name}</span>
-                  </div>
-                </button>
+                  {/* Connector Line */}
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`w-8 md:w-12 h-0.5 transition-colors duration-300 ${step.id < currentStep ? 'bg-backgroundDark' : 'bg-border'
+                        }`}
+                    />
+                  )}
+                </React.Fragment>
               );
             })}
           </div>
-        </div>
 
-        {/* Main Content Area */}
-        <main className="flex-1 p-6 md:p-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="card">
-              {/* Step Content */}
-              {currentStep === 1 && (
-                <JobAnalysisStep
-                  jobPosting={jobPosting}
-                  setJobPosting={setJobPosting}
-                  jobAnalysis={jobAnalysis}
-                  setJobAnalysis={setJobAnalysis}
-                  loading={loading}
-                  setLoading={setLoading}
-                  error={error}
-                  setError={setError}
-                  onNext={handleNext}
-                />
-              )}
-
-              {currentStep === 2 && (
-                <QuestionsStep
-                  jobAnalysis={jobAnalysis}
-                  questions={questions}
-                  setQuestions={setQuestions}
-                  answers={answers}
-                  setAnswers={setAnswers}
-                  onGenerateResume={async (answersData) => {
-                    setLoading(true);
-                    setError(null);
-                    try {
-                      const result = await generateResume(jobAnalysis, answersData);
-                      
-                      if (result.success) {
-                        setResumeContent(result.data.resume);
-                        setAtsScore(result.data.score);
-                        setSuggestions(result.data.score.suggestions || []);
-                        handleNext(); // Move to next step
-                      } else {
-                        setError(result.error || 'Failed to generate resume');
-                      }
-                    } catch (err) {
-                      setError('Failed to generate resume: ' + (err.message || 'Unknown error'));
-                      console.error('Error generating resume:', err);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  loading={loading}
-                  setLoading={setLoading}
-                  error={error}
-                  setError={setError}
-                />
-              )}
-
-              {currentStep === 3 && (
-                <ResumePreviewStep
-                  resumeContent={resumeContent}
-                  atsScore={atsScore}
-                  suggestions={suggestions}
-                  onBack={handleBack}
-                  onContinue={handleNext}
-                />
-              )}
-
-              {currentStep === 4 && (
-                <DownloadStep
-                  resumeContent={resumeContent}
-                  jobAnalysis={jobAnalysis}
-                  answers={answers}
-                  onStartNew={() => {
-                    // Reset all state
-                    setCurrentStep(1);
-                    setJobPosting('');
-                    setJobAnalysis(null);
-                    setQuestions([]);
-                    setAnswers({});
-                    setResumeContent(null);
-                    setAtsScore(null);
-                    setSuggestions([]);
-                    setError(null);
-                  }}
-                />
-              )}
-            </div>
+          {/* Current Step Title */}
+          <div className="text-center mt-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-textPrimary">
+              {currentStepData?.name}
+            </h2>
+            <p className="text-textSecondary mt-2">
+              Step {currentStep} of {steps.length}
+            </p>
           </div>
-        </main>
+        </div>
       </div>
+
+      {/* Main Content - Centered Card */}
+      <main className="container-custom py-8 md:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Step Content Card */}
+          <div
+            key={currentStep}
+            className="bg-white rounded-2xl shadow-subtle border border-border p-6 md:p-10 animate-fade-in"
+          >
+            {currentStep === 1 && (
+              <JobAnalysisStep
+                jobPosting={jobPosting}
+                setJobPosting={setJobPosting}
+                jobAnalysis={jobAnalysis}
+                setJobAnalysis={setJobAnalysis}
+                loading={loading}
+                setLoading={setLoading}
+                error={error}
+                setError={setError}
+                onNext={handleNext}
+              />
+            )}
+
+            {currentStep === 2 && (
+              <QuestionsStep
+                jobAnalysis={jobAnalysis}
+                questions={questions}
+                setQuestions={setQuestions}
+                answers={answers}
+                setAnswers={setAnswers}
+                onGenerateResume={async (answersData) => {
+                  setLoading(true);
+                  setError(null);
+                  try {
+                    const result = await generateResume(jobAnalysis, answersData);
+
+                    if (result.success) {
+                      setResumeContent(result.data.resume);
+                      setAtsScore(result.data.score);
+                      setSkillsGap(result.data.skillsGap);
+                      setSalaryInsights(result.data.salaryInsights);
+                      setSuggestions(result.data.score.suggestions || []);
+                      handleNext();
+                    } else {
+                      setError(result.error || 'Failed to generate resume');
+                    }
+                  } catch (err) {
+                    setError('Failed to generate resume: ' + (err.message || 'Unknown error'));
+                    console.error('Error generating resume:', err);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                loading={loading}
+                setLoading={setLoading}
+                error={error}
+                setError={setError}
+              />
+            )}
+
+            {currentStep === 3 && (
+              <ResumePreviewStep
+                resumeContent={resumeContent}
+                atsScore={atsScore}
+                suggestions={suggestions}
+                jobAnalysis={jobAnalysis}
+                userAnswers={answers}
+                skillsGap={skillsGap}
+                salaryInsights={salaryInsights}
+                onBack={handleBack}
+                onContinue={handleNext}
+              />
+            )}
+
+            {currentStep === 4 && (
+              <CoverLetterStep
+                jobAnalysis={jobAnalysis}
+                userAnswers={answers}
+                resumeContent={resumeContent}
+                onBack={handleBack}
+                onContinue={handleNext}
+              />
+            )}
+
+            {currentStep === 5 && (
+              <DownloadStep
+                resumeContent={resumeContent}
+                jobAnalysis={jobAnalysis}
+                answers={answers}
+                onStartNew={() => {
+                  setCurrentStep(1);
+                  setJobPosting('');
+                  setJobAnalysis(null);
+                  setQuestions([]);
+                  setAnswers({});
+                  setResumeContent(null);
+                  setAtsScore(null);
+                  setSkillsGap(null);
+                  setSuggestions([]);
+                  setError(null);
+                }}
+              />
+            )}
+          </div>
+
+          {/* Bottom Navigation */}
+          <div className="flex items-center justify-between mt-8">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className={`
+                flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300
+                ${currentStep === 1
+                  ? 'text-textMuted cursor-not-allowed'
+                  : 'text-textPrimary hover:bg-hover'
+                }
+              `}
+            >
+              <ArrowLeft size={18} />
+              Back
+            </button>
+
+            {/* Progress Dots */}
+            <div className="flex items-center gap-2">
+              {steps.map((step) => (
+                <div
+                  key={step.id}
+                  className={`
+                    w-2.5 h-2.5 rounded-full transition-all duration-300
+                    ${step.id === currentStep
+                      ? 'w-8 bg-backgroundDark'
+                      : step.id < currentStep
+                        ? 'bg-backgroundDark'
+                        : 'bg-border'
+                    }
+                  `}
+                />
+              ))}
+            </div>
+
+            {currentStep < 5 && (
+              <button
+                onClick={handleNext}
+                className="flex items-center gap-2 px-6 py-3 bg-backgroundDark text-white rounded-full font-medium hover:bg-accentLight transition-all duration-300"
+              >
+                Next
+                <ArrowRight size={18} />
+              </button>
+            )}
+            {currentStep === 5 && (
+              <div className="w-24" />
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
 
 export default Dashboard;
-
