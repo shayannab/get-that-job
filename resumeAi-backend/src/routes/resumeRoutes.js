@@ -5,6 +5,7 @@ const { generateQuestions } = require('../services/questionGenerator');
 const { generateResumeContent } = require('../services/resumeGenerator');
 const { scoreResume } = require('../services/atsScorer');
 const { exportResume } = require('../services/documentExporter');
+const { analyzeSkillsGap } = require('../services/skillsGapAnalyzer');
 
 /**
  * POST /analyze-job
@@ -249,11 +250,20 @@ router.post('/generate-resume', async (req, res) => {
     // Calculate ATS score
     const scoreData = scoreResume(resumeContent, jobAnalysis);
 
+    // Analyze skills gap
+    const skillsGapData = analyzeSkillsGap(jobAnalysis, resumeContent, answers);
+
+    // Estimate salary
+    const { estimateSalary } = require('../services/salaryEstimator');
+    const salaryData = await estimateSalary(jobAnalysis, resumeContent, scoreData, answers);
+
     // Return success response
     return res.status(200).json({
       success: true,
       resume: resumeWithPersonalInfo,
       score: scoreData,
+      skillsGap: skillsGapData,
+      salaryInsights: salaryData,
     });
   } catch (error) {
     // Handle validation errors
@@ -371,5 +381,90 @@ router.post('/export-resume', async (req, res) => {
   }
 });
 
+/**
+ * POST /generate-cover-letter
+ * Generates a cover letter based on job analysis and user profile
+ * 
+ * @route POST /generate-cover-letter
+ * @param {Object} req.body - Request body
+ * @param {Object} req.body.jobAnalysis - The job analysis object
+ * @param {Object} req.body.answers - User answers from questionnaire
+ * @param {Object} req.body.resumeContent - Optional resume content for reference
+ * @returns {Object} 200 - Success response with cover letter
+ * @returns {Object} 400 - Validation error
+ * @returns {Object} 500 - Server error
+ */
+router.post('/generate-cover-letter', async (req, res) => {
+  try {
+    // Validate input
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'Request body is required',
+      });
+    }
+
+    const { jobAnalysis, answers, resumeContent } = req.body;
+
+    if (!jobAnalysis || typeof jobAnalysis !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'jobAnalysis is required and must be an object',
+      });
+    }
+
+    if (!answers || typeof answers !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'answers is required and must be an object',
+      });
+    }
+
+    // Validate required user info
+    if (!answers.full_name || typeof answers.full_name !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'answers.full_name is required',
+      });
+    }
+
+    // Import cover letter generator
+    const { generateCoverLetter } = require('../services/coverLetterGenerator');
+
+    // Generate cover letter
+    const coverLetter = await generateCoverLetter(jobAnalysis, answers, resumeContent || null);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      coverLetter: coverLetter,
+    });
+  } catch (error) {
+    // Handle validation errors
+    if (error.message.includes('must be') || error.message.includes('required')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    // Handle API key errors
+    if (error.message.includes('GROQ_API_KEY')) {
+      return res.status(500).json({
+        success: false,
+        error: 'API configuration error: ' + error.message,
+      });
+    }
+
+    // Handle other errors
+    console.error('Error in /generate-cover-letter:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to generate cover letter: ' + error.message,
+    });
+  }
+});
+
 module.exports = router;
+
 
