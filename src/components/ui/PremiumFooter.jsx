@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Linkedin, Twitter, Github } from 'lucide-react';
+import { ArrowUpRight, Twitter, Github } from 'lucide-react';
 import Antigravity from './Antigravity';
 
 /**
@@ -10,22 +10,11 @@ const PremiumFooter = () => {
     const productLinks = [
         { name: 'Resume Builder', href: '/dashboard' },
         { name: 'Cover Letter', href: '/dashboard' },
-        { name: 'ATS Checker', href: '/dashboard' },
-        { name: 'Templates', href: '#' },
     ];
 
-    const resourceLinks = [
-        { name: 'Blog', href: '#' },
-        { name: 'Pricing', href: '#' },
-        { name: 'Use Cases', href: '#' },
-        { name: 'FAQ', href: '#' },
-    ];
-
-    const bottomLinks = [
-        { name: 'About', href: '#' },
-        { name: 'Privacy', href: '#' },
-        { name: 'Terms', href: '#' },
-        { name: 'Contact', href: '#' },
+    const legalLinks = [
+        { name: 'Privacy', href: '/privacy' },
+        { name: 'Terms', href: '/terms' },
     ];
 
     return (
@@ -33,8 +22,9 @@ const PremiumFooter = () => {
             {/* Main Footer Content */}
             <div className="container-custom py-16 md:py-24">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
-                    {/* Tagline */}
+                    {/* Logo and Tagline */}
                     <div className="md:col-span-4">
+                        <img src="/assets/logo.png" alt="ResumeLab" className="h-24 w-24 mb-4" />
                         <p className="text-xl md:text-2xl font-light text-textPrimary italic">
                             Land your dream job
                         </p>
@@ -60,27 +50,6 @@ const PremiumFooter = () => {
                             ))}
                         </ul>
                     </div>
-
-                    {/* Resource Links */}
-                    <div className="md:col-span-4">
-                        <h4 className="text-textPrimary font-semibold mb-6">Resources</h4>
-                        <ul className="space-y-4">
-                            {resourceLinks.map((link) => (
-                                <li key={link.name}>
-                                    <a
-                                        href={link.href}
-                                        className="footer-link flex items-center gap-2 group"
-                                    >
-                                        {link.name}
-                                        <ArrowUpRight
-                                            size={14}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                        />
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
                 </div>
 
                 {/* Large Brand Name with Antigravity */}
@@ -92,7 +61,7 @@ const PremiumFooter = () => {
                         ringRadius={7}
                         waveSpeed={0.4}
                         waveAmplitude={1}
-                        particleSize={1.5}
+                        particleSize={3}
                         lerpSpeed={0.05}
                         color="#3b82f6"
                         autoAnimate={true}
@@ -100,7 +69,7 @@ const PremiumFooter = () => {
                         particleShape="capsule"
                     />
                     <h2 className="footer-brand text-center absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                        Get That Job
+                        ResumeLab
                     </h2>
                 </div>
             </div>
@@ -111,40 +80,37 @@ const PremiumFooter = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         {/* Copyright */}
                         <p className="text-textMuted text-sm">
-                            © {new Date().getFullYear()} Get That Job
+                            © {new Date().getFullYear()} ResumeLab
                         </p>
 
-                        {/* Bottom Links */}
+                        {/* Legal Links */}
                         <nav className="flex flex-wrap justify-center gap-6">
-                            {bottomLinks.map((link) => (
-                                <a
+                            {legalLinks.map((link) => (
+                                <Link
                                     key={link.name}
-                                    href={link.href}
+                                    to={link.href}
                                     className="text-textMuted hover:text-textPrimary text-sm transition-colors"
                                 >
                                     {link.name}
-                                </a>
+                                </Link>
                             ))}
                         </nav>
 
                         {/* Social Links */}
                         <div className="flex items-center gap-4">
                             <a
-                                href="#"
+                                href="https://x.com/shayanna_0"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-textMuted hover:text-textPrimary transition-colors"
-                                aria-label="LinkedIn"
-                            >
-                                <Linkedin size={18} />
-                            </a>
-                            <a
-                                href="#"
-                                className="text-textMuted hover:text-textPrimary transition-colors"
-                                aria-label="Twitter"
+                                aria-label="X (Twitter)"
                             >
                                 <Twitter size={18} />
                             </a>
                             <a
-                                href="#"
+                                href="https://github.com/shayannab"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-textMuted hover:text-textPrimary transition-colors"
                                 aria-label="GitHub"
                             >

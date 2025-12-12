@@ -92,30 +92,30 @@ function ResumePreviewStep({
                 <h3 className="font-semibold text-textPrimary">Skills Gap Analysis</h3>
                 <p className="text-sm text-textSecondary">{skillsGap.summary}</p>
               </div>
-              <span className="text-3xl font-bold text-textPrimary">{skillsGap.matchPercentage}%</span>
+              <span className="text-3xl font-bold text-textPrimary">{skillsGap.overallMatchPercentage}%</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white rounded-2xl p-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-textSecondary">Required Skills</span>
-                  <span className="font-semibold text-textPrimary">{skillsGap.requiredSkillsMatched}/{skillsGap.totalRequiredSkills}</span>
+                  <span className="font-semibold text-textPrimary">{skillsGap.skills?.matched?.length || 0}/{(skillsGap.skills?.matched?.length || 0) + (skillsGap.skills?.missing?.length || 0)}</span>
                 </div>
                 <div className="h-2 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full bg-backgroundDark rounded-full"
-                    style={{ width: `${(skillsGap.requiredSkillsMatched / skillsGap.totalRequiredSkills) * 100}%` }}
+                    style={{ width: `${skillsGap.skills?.matchPercentage || 0}%` }}
                   />
                 </div>
               </div>
               <div className="bg-white rounded-2xl p-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-sm text-textSecondary">Preferred Skills</span>
-                  <span className="font-semibold text-textPrimary">{skillsGap.preferredSkillsMatched}/{skillsGap.totalPreferredSkills}</span>
+                  <span className="font-semibold text-textPrimary">{skillsGap.qualifications?.matched?.length || 0}/{(skillsGap.qualifications?.matched?.length || 0) + (skillsGap.qualifications?.missing?.length || 0)}</span>
                 </div>
                 <div className="h-2 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gray-400 rounded-full"
-                    style={{ width: `${(skillsGap.preferredSkillsMatched / skillsGap.totalPreferredSkills) * 100}%` }}
+                    style={{ width: `${skillsGap.qualifications?.matchPercentage || 0}%` }}
                   />
                 </div>
               </div>
@@ -132,10 +132,10 @@ function ResumePreviewStep({
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-textPrimary mb-1">
-                ${salaryInsights.median?.toLocaleString()}
+                ${salaryInsights.range?.mid?.toLocaleString() || 'N/A'}
               </p>
               <p className="text-sm text-textSecondary">
-                ${salaryInsights.min?.toLocaleString()} - ${salaryInsights.max?.toLocaleString()}
+                ${salaryInsights.range?.min?.toLocaleString() || 'N/A'} - ${salaryInsights.range?.max?.toLocaleString() || 'N/A'}
               </p>
             </div>
           </div>

@@ -70,12 +70,15 @@ function Dashboard() {
       <header className="bg-white border-b border-border">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
-            <h1
-              className="text-2xl font-bold text-textPrimary cursor-pointer tracking-tight"
+            <div
+              className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate('/')}
             >
-              Get That Job
-            </h1>
+              <img src="/assets/logo.png" alt="ResumeLab" className="h-8 w-8" />
+              <span className="text-2xl font-bold text-textPrimary tracking-tight">
+                ResumeLab
+              </span>
+            </div>
             <button
               className="btn-ghost flex items-center gap-2 text-textSecondary hover:text-textPrimary"
               onClick={() => navigate('/')}

@@ -15,7 +15,6 @@ import RevealAnimation from './ui/RevealAnimation';
 import AnimatedCarousel from './ui/AnimatedCarousel';
 import PremiumFooter from './ui/PremiumFooter';
 import StarBorder from './ui/StarBorder';
-import Antigravity from './ui/Antigravity';
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -91,7 +90,7 @@ function LandingPage() {
   // Testimonials for carousel
   const testimonials = [
     {
-      quote: "Get That Job helped me land interviews at 3 FAANG companies. The ATS optimization is incredible.",
+      quote: "ResumeLab helped me land interviews at 3 FAANG companies. The ATS optimization is incredible.",
       author: "Sarah Chen",
       role: "Software Engineer at Google",
     },
@@ -143,12 +142,15 @@ function LandingPage() {
           `}
         >
           {/* Logo */}
-          <h1
-            className="text-lg font-bold text-textPrimary tracking-tight cursor-pointer"
+          <div
+            className="flex items-center gap-2 cursor-pointer"
             onClick={() => navigate('/')}
           >
-            Get That Job
-          </h1>
+            <img src="/assets/logo.png" alt="ResumeLab" className="h-8 w-8" />
+            <span className="text-lg font-bold text-textPrimary tracking-tight">
+              ResumeLab
+            </span>
+          </div>
 
           {/* Nav Links - Desktop */}
           <div className="hidden md:flex items-center gap-6">
@@ -175,23 +177,6 @@ function LandingPage() {
 
       {/* Hero Section */}
       <section className="hero-section pt-32 pb-24 md:pt-48 md:pb-32 relative overflow-hidden">
-        {/* Antigravity Particle Effect */}
-        <div className="absolute inset-0" style={{ height: '100%' }}>
-          <Antigravity
-            count={300}
-            magnetRadius={6}
-            ringRadius={7}
-            waveSpeed={0.4}
-            waveAmplitude={1}
-            particleSize={1.5}
-            lerpSpeed={0.05}
-            color="#3b82f6"
-            autoAnimate={true}
-            particleVariance={1}
-            particleShape="capsule"
-          />
-        </div>
-
         {/* Dotted Grid */}
         <div className="dotted-grid absolute inset-0 opacity-30" />
 
